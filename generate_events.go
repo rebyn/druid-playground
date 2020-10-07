@@ -72,7 +72,7 @@ func main() {
 				dayEventsChan <- &View{
 					Timestamp:  trDate,
 					UserId:     uint(rand.Intn(numberOfCreators)),
-					CreatorId:  uint(c),
+					CreatorId:  uint(c + 1),
 					PostId:     uint(rand.Intn(100)),
 				}
 				startHour++
