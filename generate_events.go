@@ -18,10 +18,10 @@ type View struct {
 func main() {
 	dayEventsChan := make(chan *View, 1000)
 	timeZone, _ := time.LoadLocation("Asia/Bangkok")
-	startDate := time.Date(2020, 09, 01, 0, 0, 0, 0, timeZone)
-	numberOfDays := 30
+	startDate := time.Date(2020, 10, 01, 0, 0, 0, 0, timeZone)
+	numberOfDays := 7
 	numberOfCreators := 100
-	maxViewsPerClientPerDay := 500000
+	maxViewsPerClientPerDay := 1500000
 
 	// receive Views and put all of them to file
 	writeDoneChan := make(chan struct{}, 0)
