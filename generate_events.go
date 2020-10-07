@@ -21,7 +21,7 @@ func main() {
 	startDate := time.Date(2020, 10, 01, 0, 0, 0, 0, timeZone)
 	numberOfDays := 7
 	numberOfCreators := 100
-	maxViewsPerClientPerDay := 5000 
+	maxViewsPerClientPerDay := 5000
 
 	// receive Views and put all of them to file
 	writeDoneChan := make(chan struct{}, 0)
@@ -73,7 +73,7 @@ func main() {
 					Timestamp:  trDate,
 					UserId:     uint(rand.Intn(numberOfCreators)),
 					CreatorId:  uint(c),
-					PostId:     uint(rand.Intn(100))
+					PostId:     uint(rand.Intn(100)),
 				}
 				startHour++
 			}
