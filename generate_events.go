@@ -8,33 +8,24 @@ import (
 	"time"
 )
 
-type TransactionStatus string
-
-const (
-	Created   TransactionStatus = "created"
-	Confirmed                   = "confirmed"
-	Cancelled                   = "cancelled"
-)
-
-type Transaction struct {
+type View struct {
 	Timestamp  time.Time
-	MerchantId uint
-	ClientId   uint
-	Amount     uint
-	Status     TransactionStatus
+	CreatorId  uint
+	UserId     uint
+	PostId     uint
 }
 
 func main() {
-	dayTransactionsChan := make(chan *Transaction, 1000)
-	timeZone, _ := time.LoadLocation("Europe/Moscow")
-	startDate := time.Date(2020, 4, 27, 0, 0, 0, 0, timeZone)
-	numberOfDays := 30
-	numberOfClients := 1500000
-	maxTransactionsPerClientPerDay := 5
+	dayEventsChan := make(chan *View, 1000)
+	timeZone, _ := time.LoadLocation("Asia/Bangkok")
+	startDate := time.Date(2020, 10, 01, 0, 0, 0, 0, timeZone)
+	numberOfDays := 7
+	numberOfCreators := 100
+	maxViewsPerClientPerDay := 5000 
 
-	// receive transactions and put all of them to file
+	// receive Views and put all of them to file
 	writeDoneChan := make(chan struct{}, 0)
-	go func(dayChan <-chan *Transaction) {
+	go func(dayChan <-chan *View) {
 		fp, _ := os.Create("./generated/events.json")
 		defer fp.Close()
 
@@ -60,17 +51,17 @@ func main() {
 		}
 
 		writeDoneChan <- struct{}{}
-	}(dayTransactionsChan)
+	}(dayEventsChan)
 
-	// generate all transactions
+	// generate all Views
 	for d := 0; d < numberOfDays; d++ {
-		for c := 0; c < numberOfClients; c++ {
-			if c%10000 == 0 {
-				fmt.Println("clients done:", c, "for day:", d)
+		for c := 0; c < numberOfCreators; c++ {
+			if c%10 == 0 {
+				fmt.Println("creators done:", c, "for day:", d)
 			}
 
-			numToday := rand.Intn(maxTransactionsPerClientPerDay) + 1
-			startHour := rand.Intn(20-maxTransactionsPerClientPerDay) + 8
+			numToday := rand.Intn(maxViewsPerClientPerDay)
+			startHour := rand.Intn(23)
 
 			for i := 0; i < numToday; i++ {
 				trDate := startDate.
@@ -78,20 +69,19 @@ func main() {
 					Add(time.Hour * time.Duration(startHour)).
 					Add(time.Minute * time.Duration(rand.Intn(59)))
 
-				dayTransactionsChan <- &Transaction{
+				dayEventsChan <- &View{
 					Timestamp:  trDate,
-					MerchantId: uint(rand.Intn(1000)),
-					ClientId:   uint(c),
-					Amount:     uint(rand.Intn(10000)),
-					Status:     Created,
+					UserId:     uint(rand.Intn(numberOfCreators)),
+					CreatorId:  uint(c),
+					PostId:     uint(rand.Intn(100))
 				}
 				startHour++
 			}
 		}
 	}
 
-	close(dayTransactionsChan)
-	fmt.Println("finished transaction generation")
+	close(dayEventsChan)
+	fmt.Println("finished View event generation")
 
 	<-writeDoneChan
 	fmt.Println("finished writing")
