@@ -9,19 +9,19 @@ import (
 )
 
 type View struct {
-	Timestamp  time.Time
-	CreatorId  uint
-	UserId     uint
-	PostId     uint
+	Timestamp  time.Time `json:"timestamp"`
+	CreatorId  uint      `json:"creator_id"`
+	UserId     uint      `json:"user_id"`
+	PostId     uint      `json:"post_id"`
 }
 
 func main() {
 	dayEventsChan := make(chan *View, 1000)
 	timeZone, _ := time.LoadLocation("Asia/Bangkok")
-	startDate := time.Date(2020, 10, 01, 0, 0, 0, 0, timeZone)
+	startDate := time.Date(2020, 9, 01, 0, 0, 0, 0, timeZone)
 	numberOfDays := 7
-	numberOfCreators := 100
-	maxViewsPerClientPerDay := 1500000
+	numberOfCreators := 5
+	maxViewsPerClientPerDay := 500
 
 	// receive Views and put all of them to file
 	writeDoneChan := make(chan struct{}, 0)
